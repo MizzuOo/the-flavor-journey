@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Order History</title>
+
+<link rel="stylesheet" href="../css/style.css">
+<!-- Modern Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ================= GLOBAL & LAYOUT FIX ================= */
+body {
+    background-color: var(--primary-color); 
+    font-family: 'Roboto', sans-serif;
+    color: var(--dark-color);
+    margin: 0;
+    padding: 0;
+}
+
+/* NAVBAR FIX */
+header {
+    background-color: var(--primary-color) !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+
+.history-section {
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 160px 20px 40px 20px; 
+    min-height: 80vh;
+}
+
+
+.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    color: yellow; 
+    margin-bottom: 35px;
+    text-align: center;
+}
+
+/* ================= MODERN ORDER CARD ================= */
+.order-card {
+    background: var(--white-color);
+    margin-bottom: 25px;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.order-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #edf2f7;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.order-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--dark-color);
+    margin: 0;
+}
+
+.order-date {
+    font-size: 0.9rem;
+    color: #718096;
+    margin-top: 4px;
+}
+
+/* STATUS BADGES */
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+.status-pending { background-color: #fff3e0; color: orange; }
+.status-confirm { background-color: #e3f2fd; color: #2196F3; }
+.status-preparing { background-color: #f3e5f5; color: #9C27B0; }
+.status-delivering { background-color: #fff3e0; color: #FF9800; }
+.status-completed { background-color: #e8f5e9; color: var(--primary-color); }
+.status-cancelled { background-color: #fee2e2; color: #ef4444; }
+
+/* ORDER ITEMS */
+.order-items {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+.order-items li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px dashed #edf2f7;
+    color: #4a5568;
+}
+
+/* ================= AMOUNT PAID AREA ================= */
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--light-pink-color); 
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.total-label {
+    color: var(--dark-color);
+    font-weight: 500;
+}
+
+.total-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color); 
+}
+
+/* EMPTY STATE */
+.empty-box {
+    text-align: center;
+    color: var(--dark-color);
+    background: var(--white-color);
+    padding: 50px 30px;
+    border-radius: 16px;
+    margin-top: 40px;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+<nav class="navbar"> 
+
+    <a href="index.html" class="nav-logo">
+        <h1 class="logo-text">🥗The Flavour Journey</h1>
+    </a>
+
+    <ul class="nav-menu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="categories.html" class="nav-link">Categories</a></li>
+        <li><a href="menu.html" class="nav-link">Menu</a></li>
+        <li><a href="cart.html" class="nav-link">Cart</a></li>
+        <li><a href="order-history.html" class="nav-link">My Orders</a></li>
+        <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+
+        <li id="auth-item"></li>
+        <li><span class="nav-link" id="userDisplay"></span></li>
+    </ul>
+
+</nav>
+</header>
+
+<section class="history-section">
+    <h2 class="section-title">📦 My Order History</h2>
+    <div id="orders-container"></div>
+</section>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/ui.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+
+  if (typeof renderNavbarUser === "function") {
+    renderNavbarUser();
+  }
+
+  const { data: { session } } = await db.auth.getSession();
+  const user = session?.user;
+
+  if (!user) {
+    alert("Please login first");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const container = document.getElementById("orders-container");
+  container.innerHTML = "<p style='color:#718096; text-align:center; margin-top: 30px;'>Loading orders...</p>";
+
+  const { data: orders, error } = await db
+    .from("orders")
+    .select(`
+      *,
+      order_items (
+        quantity,
+        price,
+        products (
+          name,
+          image_url
+        )
+      )
+    `)
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    container.innerHTML = `<div class="empty-box">${error.message}</div>`;
+    return;
+  }
+
+  if (!orders.length) {
+    container.innerHTML = `<div class="empty-box">No orders found yet. Start ordering your favorite meals!</div>`;
+    return;
+  }
+
+  container.innerHTML = "";
+
+  orders.forEach(order => {
+    const card = document.createElement("div");
+    card.className = "order-card";
+
+    // Date Format
+    const created = new Date(order.created_at).toLocaleDateString('en-US', {
+        year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute:'2-digit'
+    });
+
+    // Dynamic Status Badge Color
+    let statusClass = "status-pending";
+    const statusLower = String(order.status).toLowerCase().trim();
+
+    if (statusLower === "pending") {
+        statusClass = "status-pending";
+    } else if (statusLower === "confirm") {
+        statusClass = "status-confirm";
+    } else if (statusLower === "preparing") {
+        statusClass = "status-preparing";
+    } else if (statusLower === "delivering") {
+        statusClass = "status-delivering";
+    } else if (statusLower === "complete" || statusLower === "completed") {
+        statusClass = "status-completed";
+    } else if (statusLower === "cancel" || statusLower === "cancelled") {
+        statusClass = "status-cancelled";
+    }
+
+    let itemsHtml = "";
+    order.order_items.forEach(item => {
+      itemsHtml += `
+        <li>
+          <span><strong>${item.products?.name || "Delicious Dish"}</strong> × ${item.quantity}</span>
+          <span>${Number(item.price * item.quantity).toLocaleString()} MMK</span>
+        </li>
+      `;
+    });
+
+    // Modern Inner Layout Structure
+    card.innerHTML = `
+      <div class="card-header">
+        <div>
+          <div class="order-title">Order #${order.id}</div>
+          <div class="order-date">${created}</div>
+        </div>
+        <span class="status-badge ${statusClass}">${order.status}</span>
+      </div>
+      
+      <ul class="order-items">
+        ${itemsHtml}
+      </ul>
+      
+      <div class="card-footer">
+        <span class="total-label">Amount Paid</span>
+        <span class="total-price">${Number(order.total).toLocaleString()} MMK</span>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+
+});
+</script>
+
+</body>
+</html>

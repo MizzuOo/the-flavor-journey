@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Register</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+<style>
+body {
+    background: linear-gradient(135deg, var(--primary-color), #2e7d32);
+    font-family: "Poppins", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* ===== REGISTER BOX ===== */
+.register-container {
+    max-width: 420px;
+    margin: 120px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* TITLE */
+.register-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+}
+
+/* 💡 Input နှင့် Eye Emoji ကို ဝန်းရံပေးမည့် Container */
+.input-group {
+    position: relative;
+    width: 100%;
+    margin: 10px 0;
+}
+
+/* INPUT */
+.register-container input {
+    width: 100%;
+    padding: 12px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+/* Password စာသားတွေ မျက်လုံး Emoji အောက်ထဲ တိုးမဝင်အောင် ညာဘက်ကို Space ချန်ထားပါတယ် */
+#password, #confirm {
+    padding-right: 45px;
+}
+
+.register-container input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+/* 💡 External Library မလိုဘဲ ပေါ်မည့် မျက်လုံး Emoji ဒီဇိုင်း */
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 18px;
+    user-select: none;
+    transition: 0.2s;
+}
+
+.toggle-password:hover {
+    transform: translateY(-50%) scale(1.2);
+}
+
+/* BUTTON */
+.register-container button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.register-container button:hover {
+    background: var(--secondary-color);
+    transform: scale(1.03);
+}
+
+/* MESSAGE */
+.error {
+    color: red;
+    font-size: 13px;
+    text-align: center;
+}
+
+.success {
+    color: green;
+    font-size: 13px;
+    text-align: center;
+}
+
+/* LINK */
+.link {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.link a {
+    color: var(--secondary-color);
+    text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="register-container">
+    <h2>📝 Create Account</h2>
+
+    <div class="input-group">
+        <input type="email" id="username" placeholder="Email">
+    </div>
+
+    <!-- 💡 Password Input + မျက်လုံး -->
+    <div class="input-group">
+        <input type="password" id="password" placeholder="Password">
+        <span class="toggle-password" id="eyeIcon1" onclick="togglePassword('password', 'eyeIcon1')">👁️</span>
+    </div>
+
+    <!-- 💡 Confirm Password Input + မျက်လုံး -->
+    <div class="input-group">
+        <input type="password" id="confirm" placeholder="Confirm Password">
+        <span class="toggle-password" id="eyeIcon2" onclick="togglePassword('confirm', 'eyeIcon2')">👁️</span>
+    </div>
+
+    <button onclick="handleRegister()">Register</button>
+
+    <p class="error" id="error"></p>
+    <p class="success" id="success"></p>
+    
+    <div class="link">
+        Already have an account?
+        <a href="login.html">Login</a>
+    </div>
+</div>
+
+<script>
+// 💡 Password ရော Confirm Password ရော အလုပ်လုပ်မယ့် ပိတ်/ဖွင့် Function
+function togglePassword(inputId, iconId) {
+  const passwordInput = document.getElementById(inputId);
+  const eyeIcon = document.getElementById(iconId);
+
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    eyeIcon.innerText = "🙈"; 
+  } else {
+    passwordInput.type = "password";
+    eyeIcon.innerText = "👁️"; 
+  }
+}
+
+async function handleRegister() {
+  const email = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const confirm = document.getElementById("confirm").value.trim();
+
+  if (!email || !password || !confirm) {
+    alert("Please fill all fields.");
+    return;
+  }
+
+  if (password !== confirm) {
+    alert("Passwords do not match.");
+    return;
+  }
+
+  const res = await registerUser(email, password);
+  console.log("registerUser response", res);
+
+  const isExistingResponse =
+    (!res.success && res.isExisting) ||
+    (res.success && (!res.user || /already registered/i.test(res.message)));
+
+  if (isExistingResponse) {
+    alert("This email is already registered. Redirecting to login...");
+    window.location.href = "login.html";
+    return;
+  }
+
+  if (!res.success) {
+    alert("Registration failed: " + res.message);
+    return;
+  }
+
+  alert("Check your email to confirm your registration.");
+  window.location.href = "login.html";
+}
+</script>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+
+</body>
+</html>

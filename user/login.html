@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Poppins,sans-serif;
+}
+
+body{
+    background: linear-gradient(135deg,#4CAF50,#2e7d32);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.auth-box{
+    width:420px;
+    background:white;
+    padding:40px;
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
+
+.auth-box h2{
+    text-align:center;
+    color:#4CAF50;
+    margin-bottom:25px;
+    font-size:34px;
+}
+
+/* Input Container */
+.input-group {
+    position: relative;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.auth-box input{
+    width:100%;
+    padding:14px;
+    border:1px solid #ccc;
+    border-radius:10px;
+    font-size:15px;
+    outline:none;
+}
+
+#password {
+    padding-right: 45px;
+}
+
+.auth-box input:focus{
+    border-color:#4CAF50;
+}
+
+/* 💡 အပြင် Library မလိုဘဲ ပေါ်မယ့် မျက်လုံးစာသား/ဒီဇိုင်း ခလုတ် */
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 18px;
+    user-select: none;
+    transition: 0.2s;
+}
+
+.toggle-password:hover {
+    transform: translateY(-50%) scale(1.2);
+}
+
+.auth-box button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:#4CAF50;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.auth-box button:hover{
+    background:#43a047;
+}
+
+.auth-footer{
+    text-align:center;
+    margin-top:15px;
+}
+
+.auth-footer a{
+    color:orange;
+    font-weight:600;
+    text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="auth-box">
+
+    <h2>Login</h2>
+
+    <div class="input-group">
+        <input type="email" id="email" placeholder="Email">
+    </div>
+
+    <div class="input-group">
+        <input type="password" id="password" placeholder="Password">
+        <span class="toggle-password" id="eyeIcon" onclick="togglePassword()">👁️</span>
+    </div>
+    
+    <div class="forgot-password-wrapper" style="text-align: right; margin-top: 10px; margin-bottom: 15px;">
+        <a href="forgot-password.html" style="color: var(--secondary-color); font-size: 0.9rem; font-weight: 500;">Forgot Password?</a>
+    </div>
+
+    <button onclick="handleLogin()">Login</button>
+    <div class="auth-footer">Don't have an account? 
+        <a href="register.html">Register</a>
+    </div>
+</div>
+
+<script>
+function togglePassword() {
+  const passwordInput = document.getElementById("password");
+  const eyeIcon = document.getElementById("eyeIcon");
+
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    eyeIcon.innerText = "🙈"; 
+  } else {
+    passwordInput.type = "password";
+    eyeIcon.innerText = "👁️"; 
+  }
+}
+
+async function handleLogin() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if (!email || !password) {
+    alert("Please fill all fields.");
+    return;
+  }
+
+  const res = await loginUser(email, password);
+
+  if (!res.success) {
+    alert(res.message);
+    return;
+  }
+
+  const profile = await getProfile(res.user.id);
+
+  if (profile?.role === "admin") {
+    window.location.href = "../admin/dashboard.html";
+  } else {
+    window.location.href = "../user/index.html";
+  }
+}
+</script>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+
+</body>
+</html>

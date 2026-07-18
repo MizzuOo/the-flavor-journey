@@ -1,0 +1,138 @@
+/* ================= CART SECTION ================= */
+.cart-section {
+    padding: 160px 20px 80px 20px;
+    background: var(--primary-color);
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* ================= TITLE ================= */
+.cart-section .section-title {
+    font-size: 2.2rem;
+    color: yellow;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* ================= TABLE ================= */
+.cart-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    margin-top: 20px;
+    border-radius: 12px; 
+    overflow: hidden;
+    table-layout: fixed;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); 
+}
+
+/* HEADER */
+.cart-table th {
+    background: #f8fafc;
+    color: var(--dark-color);
+    padding: 16px;
+    font-weight: 600;
+}
+
+/* CELLS */
+.cart-table td {
+    padding: 16px;
+    text-align: center;
+    border-bottom: 1px solid #edf2f7;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ================= BUTTONS ================= */
+.cart-table button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.cart-table button:hover {
+    background: var(--secondary-color);
+    transform: scale(1.05); 
+} 
+
+
+.cart-table tr td:last-child button {
+    background: #fee2e2 !important;
+    color: #ef4444 !important;
+    font-weight: 500;
+}
+
+.cart-table tr td:last-child button:hover {
+    background: #ef4444 !important;
+    color: white !important;
+}
+
+/* ================= TOTAL ================= */
+#final-total {
+    text-align: right; 
+    margin-top: 30px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--white-color); 
+}
+
+/* ================= CHECKOUT ================= */
+.cart-actions {
+    text-align: right; 
+    margin-top: 25px;
+}
+
+.checkout-btn {
+    padding: 14px 35px;
+    background: var(--secondary-color) !important; 
+    color: white !important;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 600;
+    box-shadow: 0 8px 20px rgba(243, 150, 28, 0.3); 
+    transition: all 0.3s ease;
+}
+
+.checkout-btn:hover {
+    transform: translateY(-3px); 
+    box-shadow: 0 12px 25px rgba(243, 150, 28, 0.5);
+    background: #e0850b !important;
+}
+
+/* ================= EMPTY CART TEXT ================= */
+.cart-empty {
+    text-align: center;
+    color: white;
+    margin-top: 30px;
+    font-size: 1.2rem;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+    .cart-section {
+        padding: 180px 15px 40px 15px; 
+
+    .cart-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    #final-total {
+        text-align: center;
+        font-size: 1.5rem;
+    }
+
+    .cart-actions {
+        text-align: center; 
+    }
+}

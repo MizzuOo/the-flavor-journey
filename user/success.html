@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Order Success</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+<style>
+body {
+    background: linear-gradient(135deg, var(--primary-color), #2e7d32);
+    font-family: "Poppins", sans-serif;
+    margin: 0;
+}
+
+/* ===== SUCCESS BOX ===== */
+.success-container {
+    max-width: 600px;
+    margin: 120px auto;
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* ICON */
+.success-icon {
+    font-size: 70px;
+    margin-bottom: 10px;
+}
+
+/* TEXT */
+h1 {
+    color: var(--primary-color);
+}
+
+p {
+    color: #555;
+}
+
+/* BUTTONS */
+.btn {
+    display: inline-block;
+    padding: 12px 25px;
+    margin: 10px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+}
+
+.btn-home {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-menu {
+    background: var(--secondary-color);
+    color: white;
+}
+
+/* ORDER BOX */
+.order-box {
+    margin-top: 20px;
+    text-align: left;
+    font-size: 14px;
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 10px;
+    line-height: 1.6;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="success-container">
+
+    <div class="success-icon">🎉</div>
+
+    <h1>Order Placed Successfully!</h1>
+
+    <p>Thank you for ordering from <b>🥗 Spice & Cool</b></p>
+
+    <p id="user"></p>
+
+    <div class="order-box" id="order-box"></div>
+
+    <a href="menu.html" class="btn btn-menu">🍽 Order More</a>
+    <a href="order-history.html" class="btn btn-home">📦 View Orders</a>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* ================= LOGIN CHECK ================= */
+    let user = localStorage.getItem("currentUser");
+
+    if (!user) {
+        alert("Please login first");
+        window.location.href = "login.html";
+        return;
+    }
+
+    document.getElementById("user").innerText = "Customer: " + user;
+
+    /* ================= GET ORDERS ================= */
+    let orders = JSON.parse(localStorage.getItem("orders") || "[]");
+
+    let lastOrder = orders[orders.length - 1];
+
+    let box = document.getElementById("order-box");
+
+    function formatMMK(amount){
+        return Number(amount).toLocaleString() + " MMK";
+    }
+
+    /* ================= SHOW ORDER ================= */
+    if (lastOrder && lastOrder.user === user) {
+
+        let itemsHTML = lastOrder.items.map(i =>
+            `<div>🍽 ${i.name} x ${i.quantity} = ${formatMMK(i.price * i.quantity)}</div>`
+        ).join("");
+
+        box.innerHTML = `
+            <b>📦 Order Summary</b><br><br>
+            ${itemsHTML}
+            <hr>
+            <b>Total:</b> ${formatMMK(lastOrder.total)}<br>
+            <b>💳 Payment:</b> ${lastOrder.payment}<br>
+            <b>📅 Date:</b> ${lastOrder.date}
+        `;
+
+    } else {
+        box.innerHTML = `
+            <p style="color:red;">
+                No order data found or session mismatch
+            </p>
+        `;
+    }
+
+});
+</script>
+
+</body>
+</html>

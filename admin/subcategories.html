@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Subcategories</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+<style>
+body{
+    margin:0;
+    font-family:Poppins,sans-serif;
+    background:#f4f6f9;
+}
+
+.admin-container{
+    display:flex;
+    min-height:100vh;
+}
+
+/* SIDEBAR */
+.sidebar{
+    width:250px;
+    background:#111827;
+    color:white;
+    padding:20px;
+    position:fixed;
+    top:0;
+    left:0;
+    height:100vh;
+}
+
+.sidebar h2{
+    text-align:center;
+    margin-bottom:30px;
+    color:#4CAF50;
+}
+
+.sidebar a{
+    display:block;
+    color:white;
+    padding:12px;
+    margin:5px 0;
+    text-decoration:none;
+    border-radius:8px;
+}
+
+.sidebar a:hover,
+.sidebar a.active{
+    background:#4CAF50;
+}
+
+/* MAIN */
+.main{
+    margin-left:250px;
+    flex:1;
+    padding:20px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom:20px;
+}
+
+input,select{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border:1px solid #ddd;
+    border-radius:8px;
+}
+
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.btn-add{
+    background:#4CAF50;
+    color:white;
+}
+
+.btn-delete{
+    background:#ef4444;
+    color:white;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.sub-card{
+    background:white;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.sub-card img{
+    width:100%;
+    height:180px;
+    object-fit:cover;
+}
+
+.sub-card .content{
+    padding:15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="admin-container">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+    <h2>🍽 Admin</h2>
+
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="orders.html">📦 Orders</a>
+    <a href="categories.html">📂 Categories</a>
+    <a href="subcategories.html" class="active">📁 Subcategories</a>
+    <a href="products.html">🍔 Products</a>
+    <a href="users.html">👤 Users</a>
+    <a href="#" onclick="logout(); return false;">🚪 Log out</a>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <h1>Subcategories</h1>
+
+    <!-- ADD -->
+    <div class="card">
+
+        <h3>Add Subcategory</h3>
+
+        <select id="category_id"></select>
+
+        <input type="text"
+            id="name"
+            placeholder="Subcategory name">
+
+        <input type="text"
+            id="image"
+            placeholder="Image URL">
+
+        <button class="btn-add"
+            onclick="addSubcategory()">
+            Add Subcategory
+        </button>
+
+    </div>
+
+    <!-- LIST -->
+    <div class="grid" id="subGrid"></div>
+
+</div>
+</div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+
+<script>
+
+/* ======================
+   LOAD CATEGORIES
+====================== */
+async function loadCategories() {
+    const { data, error } = await db
+        .from("categories")
+        .select("id, name");
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    const select = document.getElementById("category_id");
+    select.innerHTML = "";
+
+    data.forEach(cat => {
+        select.innerHTML += `
+            <option value="${cat.id}">
+                ${cat.name}
+            </option>
+        `;
+    });
+}
+
+/* ======================
+   LOAD SUBCATEGORIES
+====================== */
+async function loadSubcategories() {
+    const { data, error } = await db
+        .from("subcategories")
+        .select(`
+            id,
+            name,
+            image_url,
+            category_id,
+            categories(name)
+        `)
+        .order("id", { ascending: false });
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    const grid = document.getElementById("subGrid");
+    grid.innerHTML = "";
+
+    data.forEach(item => {
+        grid.innerHTML += `
+        <div class="sub-card">
+            <img src="${item.image_url || ''}" />
+
+            <div class="content">
+                <h3>${item.name}</h3>
+                <p>📂 ${item.categories?.name || ''}</p>
+
+                <button class="btn-delete"
+                    onclick="deleteSubcategory(${item.id})">
+                    Delete
+                </button>
+            </div>
+        </div>
+        `;
+    });
+}
+
+/* ======================
+   ADD SUBCATEGORY
+====================== */
+async function addSubcategory() {
+    const name = document.getElementById("name").value;
+    const category_id = document.getElementById("category_id").value;
+    const image_url = document.getElementById("image").value;
+
+    const { error } = await db
+        .from("subcategories")
+        .insert([
+            {
+                name,
+                category_id,
+                image_url
+            }
+        ]);
+
+    if (error) {
+        alert(error.message);
+        return;
+    }
+
+    document.getElementById("name").value = "";
+    document.getElementById("image").value = "";
+
+    loadSubcategories();
+}
+
+/* ======================
+   DELETE SUBCATEGORY
+====================== */
+async function deleteSubcategory(id) {
+    const { error } = await db
+        .from("subcategories")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+        alert(error.message);
+        return;
+    }
+
+    loadSubcategories();
+}
+
+/* ======================
+   INIT
+====================== */
+document.addEventListener("DOMContentLoaded", async () => {
+    // ✅ ADMIN PROTECTION (အကောင့်စစ်ဆေးရန်)
+    const admin = await requireAdmin();
+    if (!admin) return;
+
+    loadCategories();
+    loadSubcategories();
+});
+</script>
+
+</body>
+</html>

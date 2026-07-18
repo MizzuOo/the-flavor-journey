@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<title>Categories</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+<style>
+
+/* ===== PAGE LAYOUT ===== */
+.categories-section {
+    padding: 120px 20px;
+    background: var(--primary-color);
+    min-height: 100vh;
+}
+
+/* ===== TITLE ===== */
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    color: white;
+    margin-bottom: 40px;      
+    font-weight: bold;
+}
+
+/* ===== GRID (FIX MESSY LAYOUT) ===== */
+.categories-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 300px)); 
+    justify-content: center; 
+    gap: 30px; 
+    max-width: 1100px;
+    margin: auto;
+}
+
+/* ===== CATEGORY CARD (LEVEL 5 DESIGN) ===== */
+.category-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    text-decoration: none;
+    color: black;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    cursor: pointer;
+}
+
+.category-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(255, 152, 0, 0.35); 
+    border-color: #FF9800; 
+}
+
+.category-card:active {
+    transform: translateY(-2px); 
+    background: #FFF3E0;
+}
+
+/* ===== IMAGE FIX ===== */
+.category-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+}
+
+/* ===== TEXT AREA ===== */
+.category-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    text-decoration: none;
+    color: black;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    cursor: pointer;
+    border: 3px solid transparent;
+}
+
+.category-card:hover h3 {
+    color: orangered;
+}
+
+/* ===== HOVER EFFECT ===== */
+.category-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 152, 0, 0.08); 
+    transition: 0.3s;
+    pointer-events: none;
+}
+
+.category-card:hover::after {
+    opacity: 1;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+    .section-title {
+        font-size: 2rem;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+    <nav class="navbar section-content">
+
+        <a href="#" class="nav-logo">
+            <h1 class="logo-text">🥗The Flavour Journey</h1>
+        </a>
+
+        <ul class="nav-menu">
+
+            <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+            <li class="nav-item"><a href="categories.html" class="nav-link">Categories</a></li>
+            <li class="nav-item"><a href="menu.html" class="nav-link">Menu</a></li>
+            <li class="nav-item"><a href="cart.html" class="nav-link">Cart</a></li>
+            <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+
+            <li class="nav-item" id="auth-item"></li>
+            <li class="nav-item"><span class="nav-link" id="userDisplay"></span></li>
+
+        </ul>
+
+    </nav>
+</header>
+
+<!-- ===== CATEGORIES ===== -->
+<section class="categories-section">
+
+    <h2 class="section-title">🍽 Food Categories</h2>
+
+    <div class="categories-container">
+
+        <a href="subcategories.html?category=1" class="category-card">
+            <img src="https://img.freepik.com/premium-photo/thai-spicy-salad-with-seafood_51524-22172.jpg">
+            <h3>FOODS</h3>
+        </a>
+
+        <a href="subcategories.html?category=2" class="category-card">
+            <img src="https://www.tnmegasales.com/home-banner.jpg">
+            <h3>DRINKS</h3>
+        </a>
+
+    
+
+    </div>
+
+</section>
+
+<script>
+    
+    async function loadCategories() {
+
+    const container = document.querySelector(".categories-container");
+
+    const { data, error } = await db
+        .from("categories")
+        .select("*");
+
+    if (error) {
+        console.log(error);
+        return;
+    }
+
+    container.innerHTML = "";
+
+    data.forEach(cat => {
+
+        const card = document.createElement("a");
+        card.className = "category-card";
+        card.href = `subcategories.html?category=${cat.id}`;
+
+        card.innerHTML = `
+            <img src="${cat.photo || 'https://via.placeholder.com/300'}">
+            <h3>${cat.name}</h3>
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", loadCategories);
+</script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/cartservice.js"></script>
+<script src="../js/checkout.service.js"></script>
+<script src="../js/ui.js"></script>
+
+<script>
+/* ================= INIT NAVBAR ================= */
+document.addEventListener("DOMContentLoaded", () => {
+    renderNavbarUser();
+});
+</script>
+
+</body>
+</html>

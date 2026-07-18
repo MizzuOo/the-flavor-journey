@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+<style>
+    body {
+        background-color: var(--primary-color);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    /* ================= CUSTOMER REVIEWS SECTION ================= */
+    .testimonial-section {
+        max-width: 1000px;
+        margin: 50px auto;
+        padding: 0 20px;
+    }
+
+    .section-title {
+        text-align: center;
+        color: white;
+        font-size: var(--font-size-xl);
+        margin-bottom: 30px;
+        position: relative;
+    }
+
+    
+    .review-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        background: transparent; 
+    }
+
+    
+    .review-card {
+        background: white;
+        padding: 24px;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        border-left: none; 
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        position: relative;
+    }
+
+    .review-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    
+    .review-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+
+    .review-avatar {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, #ff4d4d, #ff9f43);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 18px;
+        text-transform: uppercase;
+        box-shadow: 0 4px 10px rgba(255, 77, 77, 0.3);
+    }
+
+    .review-user-info strong {
+        font-size: 16px;
+        color: #2c3e50;
+        display: block;
+    }
+
+   
+    .review-card p {
+        color: #57606f;
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 10px 0 0 0; 
+        font-style: italic;
+        text-align: center; 
+    }
+    
+    .review-card::before {
+        content: "“";
+        position: absolute;
+        top: 15px;
+        right: 25px;
+        font-size: 60px;
+        color: #f1f2f6;
+        font-family: serif;
+        line-height: 1;
+    }
+
+    /* ================= FEEDBACK FORM ================= */
+    .feedback-section {
+        max-width: 600px; 
+        margin: 60px auto;
+        padding: 35px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    .feedback-section h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .feedback-section input,
+    .feedback-section textarea {
+        width: 100%;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+        border: 1px solid #e1e8ed;
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 14px;
+        background-color: #f8fa fc;
+        box-sizing: border-box;
+        transition: all 0.3s ease;
+    }
+
+    .feedback-section input:focus,
+    .feedback-section textarea:focus {
+        border-color: #ff4d4d;
+        background-color: white;
+        box-shadow: 0 0 0 4px rgba(255, 77, 77, 0.1);
+        outline: none;
+    }
+
+    .feedback-section textarea {
+        height: 120px;
+        resize: none;
+    }
+
+    .feedback-section button {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #ff4d4d, #ff3333);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 15px rgba(255, 77, 77, 0.3);
+    }
+
+    .feedback-section button:hover {
+        background: linear-gradient(135deg, #e63e3e, #cc2929);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 77, 77, 0.4);
+    }
+
+    .feedback-section button:active {
+        transform: translateY(0);
+    }
+
+    /* Center the Contact Us section */
+    .contact-section {
+        text-align: center;
+        background-color: var(--primary-color);
+        color: var(--white-color);
+        padding: 60px 20px;
+    }
+
+    .contact-section h2 {
+        margin-bottom: 20px;
+        font-size: var(--font-size-xl);
+        color: yellow;
+    }
+
+    .contact-section p {
+        margin: 10px 0;
+        font-size: var(--font-size-m);
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+<nav class="navbar section-content">
+    <a href="#" class="nav-logo">
+        <h1 class="logo-text">🥗The Flavour Journey</h1>
+    </a>
+
+    <ul class="nav-menu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="categories.html" class="nav-link">Categories</a></li>
+        <li><a href="menu.html" class="nav-link">Menu</a></li>
+        <li><a href="cart.html" class="nav-link">Cart</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li id="auth-item"></li>
+        <li><span class="nav-link" id="userDisplay"></span></li>
+    </ul>
+</nav>
+</header>
+
+<!-- HERO -->
+<section class="about-hero fade-in">
+    <h1>About Us</h1>
+    <p>
+        At The Flavour Journey, we bring bold Thai-inspired seafood flavors to your table.
+        Fresh, spicy, and unforgettable.
+    </p>
+</section>
+
+<!-- FEATURES -->
+<section class="about-grid fade-in">
+    <div class="about-card">
+        <h3>🌶 Fresh Ingredients</h3>
+        <p>Daily fresh seafood and vegetables.</p>
+    </div>
+
+    <div class="about-card">
+        <h3>👨‍🍳 Expert Chefs</h3>
+        <p>Professional Thai fusion cooking style.</p>
+    </div>
+
+    <div class="about-card">
+        <h3>🚚 Fast Delivery</h3>
+        <p>Hot food delivered quickly.</p>
+    </div>
+</section>
+
+<!-- TESTIMONIAL DISPLAY -->
+<section class="testimonial-section fade-in">
+    <h2 class="section-title">Customer Reviews</h2>
+    <div id="reviewList" class="review-list"></div>
+</section>
+
+<!-- FEEDBACK FORM -->
+<section class="feedback-section fade-in">
+    <h2>Give Your Feedback</h2>
+    <input type="text" id="name" placeholder="Your Name">
+    <textarea id="message" placeholder="Your Feedback"></textarea>
+    <button onclick="submitFeedback()">Submit Review</button>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section fade-in">
+    <h2>Contact Us</h2>
+    <p>📍 Kyaukse, Myanmar</p>
+    <p>📞 09-123-456-789</p>
+    <p>🕒 10:00 AM – 8:00 PM</p>
+</section>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/cartservice.js"></script>
+<script src="../js/checkout.service.js"></script>
+<script src="../js/ui.js"></script>
+<script src="../js/about.js"></script>
+
+<script>
+// ✅ 
+async function loadReviews() {
+    const reviewList = document.getElementById("reviewList");
+    if (!reviewList) return;
+
+    try {
+       
+        const { data: reviews, error } = await supabase
+            .from('reviews')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        let html = "";
+
+       
+        if (reviews && reviews.length > 0) {
+            reviews.forEach(r => {
+                
+                const firstLetter = r.name ? r.name.charAt(0) : "U"; 
+                
+                html += `
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="review-avatar">${firstLetter}</div>
+                        <div class="review-user-info">
+                            <strong>${r.name}</strong>
+                        </div>
+                    </div>
+                    <p>${r.message}</p>
+                </div>
+                `;
+            });
+        } else {
+            html = "<p style='grid-column: 1/-1; text-align: center; color: #ddd; padding: 20px;'>No reviews yet. Be the first to review!</p>";
+        }
+
+        reviewList.innerHTML = html;
+
+    } catch (error) {
+        console.error("Error loading reviews:", error.message);
+        reviewList.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: #ff4d4d; padding: 20px;'>Cannot load reviews from server.</p>";
+    }
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    
+    if (typeof renderNavbarUser === "function") {
+        renderNavbarUser();
+    }
+    
+    
+    loadReviews();
+});
+</script>
+
+</body>
+</html>

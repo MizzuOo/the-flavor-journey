@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+<style>
+body{
+    margin:0;
+    font-family:Poppins, sans-serif;
+    background:#f4f6f9;
+}
+
+/* ===== LAYOUT ===== */
+.admin-container{
+    display:flex;
+    min-height:100vh;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+    width:250px;
+    background:#111827;
+    color:white;
+    padding:20px;
+    position:fixed;
+    height:100vh;
+}
+
+.sidebar h2{
+    text-align:center;
+    margin-bottom:30px;
+    color:#4CAF50;
+}
+
+.sidebar a{
+    display:block;
+    color:white;
+    padding:12px;
+    margin:5px 0;
+    text-decoration:none;
+    border-radius:8px;
+}
+
+.sidebar a:hover,
+.sidebar a.active{
+    background:#4CAF50;
+}
+
+/* ===== MAIN ===== */
+.main{
+    margin-left:250px;
+    flex:1;
+    padding:20px;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+    <h2>🛠 Admin Panel</h2>
+
+    <a href="dashboard.html" class="nav">📊 Dashboard</a>
+    <a href="products.html" class="nav">🍽 Products</a>
+    <a href="orders.html" class="nav">📦 Orders</a>
+    <a href="users.html" class="nav">👤 Users</a>
+
+    <hr>
+
+    <a href="../user/index.html">🏠 Back to Site</a>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <div class="topbar">
+
+        <h3 id="title">Admin Dashboard</h3>
+
+        <div>
+            <span id="adminName"></span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+
+    </div>
+
+    <div class="content" id="content"></div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    /* ================= ADMIN CHECK ================= */
+    let session = JSON.parse(localStorage.getItem("session") || "null");
+
+    if(!session || session.role !== "admin"){
+        alert("Access denied!");
+        window.location.href = "../user/login.html";
+        return;
+    }
+
+    document.getElementById("adminName").innerText =
+        "👋 " + session.username;
+
+    /* ================= ACTIVE MENU ================= */
+    let links = document.querySelectorAll(".nav");
+
+    links.forEach(link => {
+        if(link.href.includes(window.location.pathname.split("/").pop())){
+            link.classList.add("active");
+        }
+    });
+
+});
+
+/* ================= LOGOUT ================= */
+async function logout(){
+    try {
+        const activeDb = window.supabase || window.db;
+        if (activeDb) {
+            await activeDb.auth.signOut();
+        }
+    } catch (error) {
+        console.error("Admin logout failed:", error);
+    }
+
+    localStorage.removeItem("session");
+    localStorage.removeItem("currentUser");
+    sessionStorage.clear();
+
+    window.location.href = "../user/login.html";
+}
+</script>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+</body>
+</html>

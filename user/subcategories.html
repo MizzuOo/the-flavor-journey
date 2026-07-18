@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Subcategories - The Flavour Journey</title>
+
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link rel="stylesheet" href="../css/menu.css"/>
+
+  <style>
+    :root {
+      --primary-green: #4caf50; 
+      --accent-orange: #ff702a;
+      --card-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--primary-green);
+    }
+
+    .categories-section {
+      padding: 60px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      color: #fff200; 
+      margin-bottom: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .section-title::after {
+      content: "";
+      display: block;
+      width: 60px;
+      height: 4px;
+      background: var(--accent-orange);
+      margin: 10px auto;
+      border-radius: 2px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+      max-width: 1200px;
+      padding:  20px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 20px; 
+      overflow: hidden;
+      text-align: center;
+      box-shadow: var(--card-shadow);
+      cursor: pointer;
+      
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      display: flex;
+      flex-direction: column;
+      border: 3px solid transparent; 
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(255, 112, 42, 0.35); 
+      border-color: var(--accent-orange); 
+    }
+
+    .card:active {
+      transform: translateY(-2px);
+      background: #FFF3E0; 
+    }
+ 
+    .card img {
+      width: 100%;
+      height: 200px; /* Taller images to match the screenshot aspect ratio */
+      object-fit: cover;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .card-content {
+      padding: 20px;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      color: #333;
+      font-weight: 700;
+    }
+    .card:hover h3 {
+      color: var(--accent-orange);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 480px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <!-- Assuming your navbar styles are in menu.css -->
+    <nav class="navbar section-content">
+        <a href="#" class="nav-logo">
+            <h1 class="logo-text">🥗 The Flavour Journey</h1>
+        </a>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+            <li class="nav-item"><a href="categories.html" class="nav-link">Categories</a></li>
+            <li class="nav-item"><a href="menu.html" class="nav-link">Menu</a></li>
+            <li class="nav-item"><a href="cart.html" class="nav-link">Cart</a></li>
+            <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+            <li class="nav-item" id="auth-item"></li>
+        </ul>
+    </nav>
+  </header>
+
+  <section class="categories-section">
+    <h2 class="section-title">Subcategories</h2>
+    <div id="sub-container" class="grid">
+      <!-- Cards will be injected here -->
+    </div>
+  </section>
+
+  <script>
+ async function loadSubcategories() {
+  const container = document.getElementById("sub-container");
+
+  container.innerHTML = "<p style='color:white;'>Loading...</p>";
+
+  const params = new URLSearchParams(window.location.search);
+  const categoryId = Number(params.get("category"));
+
+  if (!categoryId) {
+    container.innerHTML = "<p style='color:white;'>Invalid category</p>";
+    return;
+  }
+
+  const { data, error } = await db
+    .from("subcategories")
+    .select("*")
+    .eq("category_id", categoryId);
+
+  if (error) {
+    console.error("Supabase error:", error.message, error);
+    container.innerHTML = "<p style='color:white;'>Error loading data</p>";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    container.innerHTML = "<p style='color:white;'>No subcategories found</p>";
+    return;
+  }
+
+  container.innerHTML = "";
+
+  data.forEach(sub => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <img src="${sub.image_url || 'https://via.placeholder.com/300'}">
+      <div class="card-content">
+        <h3>${sub.name}</h3>
+      </div>
+    `;
+
+    card.onclick = () => {
+      window.location.href = `menu.html?subcategory=${sub.id}`;
+    };
+
+    container.appendChild(card);
+  });
+}
+document.addEventListener("DOMContentLoaded", loadSubcategories);
+</script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+
+
+
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/cartservice.js"></script>
+<script src="../js/checkout.service.js"></script>
+<script src="../js/ui.js"></script>
+
+<script>
+/* ================= INIT NAVBAR ================= */
+document.addEventListener("DOMContentLoaded", () => {
+    renderNavbarUser();
+});
+</script>
+</body>
+</html>

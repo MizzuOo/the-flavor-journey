@@ -1,0 +1,230 @@
+/* ================= GLOBAL & LAYOUT ================= */
+body {
+    background-color: #4CAF50; /* တစ်ဝဘ်ဆိုဒ်လုံးကို နောက်ခံ အစိမ်းရောင် ပြောင်းတာပါ */
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    padding-top: 100px; /* 💡 Bracket အမှားကို ပြင်ပြီး အပိတ်ထည့်ပေးထားပါတယ် */
+}
+
+.checkout-section {
+    max-width: 1200px;
+    margin: 40px auto; 
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.checkout-modern-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr; 
+    gap: 30px;
+    align-items: start; 
+}
+
+@media (max-width: 992px) {
+    .checkout-modern-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ================= COMPONENT: BASE CARDS ================= */
+.card {
+    background: #ffffff; /* White Panel */
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+.card h3 {
+    display: block !important;
+    visibility: visible !important;
+    color: #1A3050 !important; 
+    margin-bottom: 20px !important;
+}
+
+/* ================= COLUMN 1: ORDER SUMMARY ================= */
+.order-summary-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-list {
+    max-height: 240px; 
+    overflow-y: auto;  
+    margin-bottom: 15px;
+    padding-right: 5px;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.summary-item img {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.total-bar {
+    background-color: #fafafa;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-top: auto; 
+}
+
+#total {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: #333;
+    margin: 0;
+}
+
+/* ================= COLUMN 2: FORM/PAYMENT ================= */
+.checkout-form-card {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ================= SEGMENTED CONTROL ================= */
+.segmented-control {
+    display: flex;
+    background-color: #f4f7f9;
+    border: 1px solid #e0e6ed;
+    border-radius: 100px;
+    padding: 4px;
+    margin-bottom: 25px;
+}
+
+.segmented-control input[type="radio"] {
+    display: none;
+}
+
+.segmented-control .type-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 25px;
+    border-radius: 100px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #6c757d;
+    transition: all 0.2s ease;
+}
+
+/* Active State to Green Theme */
+.segmented-control input[type="radio"]:checked + .type-btn {
+    background-color: #f3961c; 
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+/* ================= FORM FIELDS ================= */
+.input-group {
+    margin-bottom: 18px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.input-group input, 
+.input-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #e0e6ed;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #333;
+    background-color: #fafafa;
+    box-sizing: border-box; 
+}
+
+.input-group input:focus, 
+.input-group textarea:focus {
+    outline: none;
+    border-color: #4CAF50;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+/* ================= PAYMENT OPTIONS ================= */
+.payment-section h4 {
+    margin-top: 25px;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    color: #1A3050;
+}
+
+.payment-card-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.payment-card-options input[type="radio"] {
+    display: none;
+}
+
+.payment-card-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #e0e6ed;
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.payment-card-options input[type="radio"]:checked + .payment-card-btn {
+    border-color: #4CAF50;
+    background-color: #fdfefe;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.03);
+}
+
+.pay-title {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+/* ================= SUBMIT BUTTON ================= */
+.place-order-btn {
+    width: 100%;
+    margin-top: 30px;
+    padding: 15px 25px;
+    background-color: #f3961c;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 500;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.place-order-btn:hover {
+    background-color: #4CAF50;
+}
+
+.place-order-btn:disabled {
+    background-color: #a0c3d4;
+    cursor: not-allowed;
+}

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout</title>
+    <!-- Modern Typography Font Link -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/checkout.css">
+</head>
+<body>
+
+<header>
+<nav class="navbar section-content">
+    <a href="index.html" class="nav-logo">
+        <h1 class="logo-text">🥗The Flavour Journey</h1>
+    </a>
+
+    <ul class="nav-menu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="categories.html" class="nav-link">Categories</a></li>
+        <li><a href="menu.html" class="nav-link">Menu</a></li>
+        <li><a href="cart.html" class="nav-link">Cart</a></li>
+        <li><a href="order-history.html" class="nav-link">My Orders</a></li>
+        <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+
+        <li id="auth-item"></li>
+        <li><span class="nav-link" id="userDisplay"></span></li>
+    </ul>
+</nav>
+</header>
+
+<section class="checkout-section">
+<div class="section-content">
+
+    <div class="checkout-modern-grid">
+
+        <!-- Column 1: Order Summary Card -->
+        <div class="card order-summary-card">
+            <h3>Order Summary</h3>
+            <div id="order-summary" class="summary-list"></div>
+            <div class="total-bar">
+                <h3 id="total">Total: 0 MMK</h3>
+            </div>
+        </div>
+
+        <!-- Column 2: Modern Form Box -->
+        <div class="card checkout-form-card">
+            
+            <!-- Segmented Control for Order Type -->
+            <div class="segmented-control">
+                <input type="radio" name="orderType" value="Delivery" id="typeDelivery" checked>
+                <label for="typeDelivery" class="type-btn">
+                    <span>Delivery</span>
+                </label>
+                <input type="radio" name="orderType" value="Take Out" id="typeTakeout">
+                <label for="typeTakeout" class="type-btn">
+                    <span>Take Out (Pick-up)</span>
+                </label>
+            </div>
+
+            <form id="checkout-form">
+                <div class="form-fields">
+                    <div class="input-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" placeholder="Your Name" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" placeholder="09XXXXXXXXX" required>
+                    </div>
+
+                    <div class="input-group" id="address-container">
+                        <label for="address">Delivery Address</label>
+                        <textarea id="address" placeholder="Delivery Address" required></textarea>
+                    </div>
+                </div>
+
+                <div class="payment-section">
+                    <h4>Payment Method</h4>
+                    <div class="payment-card-options">
+                        <input type="radio" name="payment" value="Cash on Delivery" id="payCash" required>
+                        <label for="payCash" class="payment-card-btn">
+                            <span class="icon-cash">💵</span>
+                            <span class="pay-title">Cash on Delivery</span>
+                        </label>
+
+                        <input type="radio" name="payment" value="E-Payment" id="payE">
+                        <label for="payE" class="payment-card-btn">
+                            <span class="icon-card">💳</span>
+                            <span class="pay-title">E-Payment</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="payment-proof" style="display:none; margin-top: 20px;">
+                    <input type="file" id="screenshot" accept="image/*">
+                    <img id="preview-image" style="max-width: 100%; margin-top: 10px; border-radius: 8px;">
+                </div>
+
+                <button type="submit" class="place-order-btn">Place Order</button>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+</section>
+
+<!-- Supabase & External Services -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/checkout.service.js"></script>
+<script src="../js/ui.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+
+  await renderNavbarUser();
+
+  // ================= AUTH =================
+  const { data: { user } } = await db.auth.getUser();
+
+  if (!user) {
+    window.location.href = "../auth/login.html";
+    return;
+  }
+
+  // ================= LOAD CART =================
+  const { data: cart, error } = await db
+    .from("cart_items")
+    .select("*")
+    .eq("user_id", user.id);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  if (!cart || cart.length === 0) {
+    alert("Your cart is empty");
+    window.location.href = "cart.html";
+    return;
+  }
+
+  renderOrderSummary(cart);
+
+  // ================= ELEMENTS =================
+  const form = document.getElementById("checkout-form");
+  const nameInput = document.getElementById("name");
+  const phoneInput = document.getElementById("phone");
+  const addressInput = document.getElementById("address");
+  const addressContainer = document.getElementById("address-container");
+
+  const proofBox = document.getElementById("payment-proof");
+  const fileInput = document.getElementById("screenshot");
+
+  let selectedFile = null;
+
+  // ================= ORDER TYPE TOGGLE =================
+  document.querySelectorAll('input[name="orderType"]').forEach(radio => {
+    radio.addEventListener("change", () => {
+      if (radio.value === "Take Out" && radio.checked) {
+        addressContainer.style.display = "none";
+        addressInput.removeAttribute("required");
+      } else {
+        addressContainer.style.display = "block";
+        addressInput.setAttribute("required", "");
+      }
+    });
+  });
+
+  // ================= PAYMENT TOGGLE =================
+  document.querySelectorAll('input[name="payment"]').forEach(radio => {
+    radio.addEventListener("change", () => {
+      if (radio.value === "E-Payment" && radio.checked) {
+        proofBox.style.display = "block";
+      } else {
+        proofBox.style.display = "none";
+      }
+    });
+  });
+
+  // ================= FILE SELECT =================
+  fileInput.addEventListener("change", e => {
+    selectedFile = e.target.files[0];
+    if (selectedFile) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('preview-image').src = e.target.result;
+        }
+        reader.readAsDataURL(selectedFile);
+    }
+  });
+
+  // ================= SUBMIT =================
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const payment = document.querySelector('input[name="payment"]:checked');
+    const orderType = document.querySelector('input[name="orderType"]:checked');
+
+    if (!payment) {
+      alert("Please select payment method");
+      return;
+    }
+
+    // ================= FORM DATA =================
+    const formData = {
+      name: nameInput.value.trim(),
+      phone: phoneInput.value.trim(),
+      order_type: orderType.value,
+      address: orderType.value === "Take Out" ? "Take Out / Pick-up" : addressInput.value.trim(),
+      payment: payment.value
+    };
+
+    // ================= VALIDATION =================
+    if (!formData.name || !formData.phone || (orderType.value === "Delivery" && !addressInput.value.trim())) {
+      alert("Please fill all required fields");
+      return;
+    }
+
+    try {
+      // disable button
+      const btn = form.querySelector("button");
+      btn.disabled = true;
+      btn.innerText = "Processing...";
+
+      await placeOrder(
+        user,
+        cart,
+        formData,
+        selectedFile
+      );
+
+      alert("Order placed successfully!");
+      window.location.href = "order-history.html";
+
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+      const btn = form.querySelector("button");
+      btn.disabled = false;
+      btn.innerText = "Place Order";
+    }
+  });
+
+});
+</script>
+
+<script>
+/* ================= INIT NAVBAR ================= */
+document.addEventListener("DOMContentLoaded", () => {
+    renderNavbarUser();
+});
+</script>
+
+</body>
+</html>
