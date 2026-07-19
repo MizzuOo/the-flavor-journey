@@ -351,7 +351,7 @@ async function updateStatus(orderId, newStatus) {
     const allowed = {
         pending: ["confirmed", "cancelled"],
         confirmed: ["preparing", "cancelled"],
-        preparing: ["delivering", "cancelled"],
+        preparing: ["delivering", "completed", "cancelled"],
         delivering: ["completed"],
         completed: [],
         cancelled: []
